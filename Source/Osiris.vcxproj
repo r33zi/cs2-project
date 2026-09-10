@@ -512,6 +512,7 @@
     <ClInclude Include="Platform\Windows\WindowsVmtFinderParams.h" />
     <ClInclude Include="SDL\SdlConstants.h" />
     <ClInclude Include="SDL\SdlDll.h" />
+    <ClInclude Include="SDL\SdlEvents.h" />
     <ClInclude Include="SDL\SdlFunctions.h" />
     <ClInclude Include="UI\Panorama\CombatTab.h" />
     <ClInclude Include="UI\Panorama\HudTab.h" />
