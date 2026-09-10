@@ -2,6 +2,7 @@
 
 #include "GlobalContext/GlobalContext.h"
 #include "Hooks/PeepEventsHook.h"
+#include "SDL/SdlEvents.h"
 #include "Utils/ReturnAddress.h"
 
 [[NOINLINE]] void finishInit(auto& hookContext)
@@ -11,7 +12,6 @@
         hookContext.template make<PanoramaGUI>().init(hookContext.template make<PanoramaUiPanel>((*mainMenu)->uiPanel));
     hookContext.config().init();
     hookContext.config().scheduleLoad();
-    hookContext.hooks().peepEventsHook.disable();
     hookContext.hooks().viewRenderHook.install();
 }
 
@@ -26,11 +26,22 @@ int SDLHook_PeepEvents(void* events, int numevents, int action, unsigned minType
     if (initInProgress)
         finishInit(hookContext);
 
-    return hookContext.hooks().peepEventsHook.original(events, numevents, action, minType, maxType);
+    const auto numberOfEvents = hookContext.hooks().peepEventsHook.original(events, numevents, action, minType, maxType);
+    if (action == sdl3::SDL_GETEVENT && events && numberOfEvents > 0) {
+        const auto sdlEvents = static_cast<const sdl3::Event*>(events);
+        for (int i = 0; i < numberOfEvents; ++i) {
+            if (sdl3::isMenuToggleEvent(sdlEvents[i])) {
+                hookContext.template make<PanoramaGUI>().toggle();
+                break;
+            }
+        }
+    }
+    return numberOfEvents;
 }
 
 [[NOINLINE]] void unload(auto& hookContext) noexcept
 {
+    hookContext.hooks().peepEventsHook.disable();
     hookContext.template make<BombTimer>().onUnload();
     hookContext.template make<DefusingAlert>().onUnload();
     hookContext.template make<PostRoundTimer>().onUnload();

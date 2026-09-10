@@ -19,7 +19,7 @@ $.Osiris = (function () {
             rootPanel.visible = false;
             rootPanel.SetReadyForDisplay(false);
             return true;
-          } else if (newPanel.visible === true) {
+          } else if (rootPanel.visible === true) {
             $.DispatchEvent('MainMenuTabShown', 'OsirisMenuTab');
           }
         }
@@ -30,6 +30,24 @@ $.Osiris = (function () {
     })(),
     goHome: function () {
       $.DispatchEvent('Activated', this.rootPanel.GetParent().GetParent().GetParent().FindChildInLayoutFile("MainMenuNavBarHome"), 'mouse');
+    },
+    openMenu: function () {
+      GameInterfaceAPI.ConsoleCommand('gameui_activate');
+      this.rootPanel.visible = true;
+      this.rootPanel.SetReadyForDisplay(true);
+      MainMenu.NavigateToTab('OsirisMenuTab', '');
+    },
+    closeMenu: function () {
+      this.goHome();
+      this.rootPanel.visible = false;
+      this.rootPanel.SetReadyForDisplay(false);
+      GameInterfaceAPI.ConsoleCommand('gameui_hide');
+    },
+    toggleMenu: function () {
+      if (this.rootPanel.visible)
+        this.closeMenu();
+      else
+        this.openMenu();
     },
     addCommand: function (command, value = '') {
       var existingCommands = this.rootPanel.GetAttributeString('cmd', '');
@@ -148,6 +166,16 @@ $.Osiris = (function () {
     var rightContainer = $.CreatePanel('Panel', navbar, '', {
         style: "horizontal-align: right; flow-children: right; height: 100%; margin-right: 70px;"
     });
+
+    var closeButton = $.CreatePanel('Button', rightContainer, 'CloseMenuButton', {
+      class: "content-navbar__tabs__btn",
+      onactivate: "$.Osiris.closeMenu();"
+    });
+
+    closeButton.SetPanelEvent('onmouseover', function () { UiToolkitAPI.ShowTextTooltip('CloseMenuButton', 'Close menu (Insert)'); });
+    closeButton.SetPanelEvent('onmouseout', function () { UiToolkitAPI.HideTextTooltip(); });
+
+    $.CreatePanel('Label', closeButton, '', { text: "Close" });
 
     var unloadButton = $.CreatePanel('Button', rightContainer, 'UnloadButton', {
         class: "content-navbar__tabs__btn",

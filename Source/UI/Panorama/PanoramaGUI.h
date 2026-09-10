@@ -171,6 +171,14 @@ public:
         hookContext.config().template setVariable<ConfigVariable>(typename ConfigVariable::ValueType{newVariableValue});
     }
 
+    void toggle() const noexcept
+    {
+        const auto mainMenuPointer = hookContext.patternSearchResults().template get<MainMenuPanelPointer>();
+        auto&& mainMenu = hookContext.template make<ClientPanel>(mainMenuPointer ? *mainMenuPointer : nullptr).uiPanel();
+        if (mainMenu)
+            uiEngine().runScript(mainMenu, "if ($.Osiris) $.Osiris.toggleMenu();");
+    }
+
     [[nodiscard]] decltype(auto) modelGlowPreviewPanel(const char* panelId) const noexcept
     {
         auto&& guiPanel = uiEngine().getPanelFromHandle(state().guiPanelHandle);

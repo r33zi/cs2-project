@@ -90,6 +90,10 @@ However, this injection method might be detected by VAC as gdb is visible under 
 
 ## FAQ
 
+### How do I open the GUI in game?
+
+Press **Insert** to open or close the Osiris menu. You can also close it with the **Close** button in the menu header.
+
 ### Where are the settings stored on disk?
 
 In a configuration file `default.cfg` inside `%appdata%\OsirisCS2\configs` directory on Windows and `$HOME/OsirisCS2/configs` on Linux.
